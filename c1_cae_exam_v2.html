@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C1 Advanced – Reading & Use of English</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+:root{--bg:#0f0e17;--surface:#1a1a2e;--surface2:#16213e;--accent:#e8c547;--accent2:#ff6b6b;--accent3:#4ecdc4;--text:#fffffe;--dim:#a7a9be;--border:rgba(232,197,71,.18);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:var(--bg);}
+.sp-inner{text-align:center;animation:fadeUp .7s ease both;max-width:450px;width:90%;}
+.sp-badge{display:inline-block;background:var(--accent);color:#0f0e17;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;letter-spacing:3px;padding:5px 16px;border-radius:20px;margin-bottom:18px;text-transform:uppercase;}
+.sp-title{font-family:'Playfair Display',serif;font-size:clamp(42px,9vw,68px);font-weight:900;line-height:1;background:linear-gradient(135deg,var(--accent) 0%,#fff 65%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:5px;}
+.sp-sub{color:var(--dim);font-size:15px;margin-bottom:36px;}
+.sp-form{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:30px;}
+.sp-form label{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:7px;text-align:left;}
+.sp-form input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;margin-bottom:16px;}
+.sp-form input:focus{border-color:var(--accent);background:rgba(232,197,71,.05);}
+.info-box{background:rgba(78,205,196,.07);border:1px solid rgba(78,205,196,.22);border-radius:10px;padding:12px 16px;margin-bottom:20px;text-align:left;font-size:13px;color:var(--accent3);line-height:1.6;}
+.btn-start{width:100%;background:var(--accent);color:#0f0e17;border:none;border-radius:12px;padding:15px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,197,71,.36);}
+
+/* APP SHELL */
+#app{display:none;height:100vh;flex-direction:column;}
+
+/* TOPBAR */
+.topbar{height:56px;background:rgba(15,14,23,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:14px;flex-shrink:0;z-index:50;}
+.tb-logo{font-family:'Playfair Display',serif;font-weight:900;font-size:19px;background:linear-gradient(135deg,var(--accent),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;}
+.tb-chip{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 9px;font-size:13px;color:var(--dim);display:flex;align-items:center;gap:5px;max-width:200px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.tb-chip b{color:var(--accent);}
+.tb-mid{flex:1;display:flex;align-items:center;justify-content:center;}
+.tb-part{font-size:12px;color:var(--dim);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 12px;white-space:nowrap;}
+.tb-part b{color:var(--accent);}
+.tb-right{display:flex;align-items:center;gap:12px;}
+.timer{font-family:'DM Mono',monospace;font-size:17px;color:var(--accent);font-weight:500;letter-spacing:1px;}
+.timer.warn{color:var(--accent2);animation:blink 1s infinite;}
+.save-wrap{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--dim);}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--accent3);animation:pulse 2s ease infinite;}
+.sdot.on{background:var(--accent);animation:none;}
+.btn-deliver{background:var(--accent2);color:#fff;border:none;border-radius:9px;padding:8px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap;}
+.btn-deliver:hover{opacity:.82;}
+
+/* PROGRESS */
+.prog{height:3px;background:rgba(255,255,255,.05);flex-shrink:0;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));transition:width .4s ease;}
+
+/* EXAM AREA */
+.exam-area{flex:1;display:flex;overflow:hidden;}
+
+/* PASSAGE PANEL */
+.psg-panel{width:58%;border-right:1px solid var(--border);overflow-y:auto;background:var(--surface2);padding:22px 24px;flex-shrink:0;}
+.psg-panel::-webkit-scrollbar{width:4px;}
+.psg-panel::-webkit-scrollbar-thumb{background:rgba(232,197,71,.18);border-radius:2px;}
+.psg-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+.psg-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:2px;line-height:1.3;}
+.psg-sub{font-size:11px;color:var(--dim);margin-bottom:12px;font-style:italic;}
+.psg-body{font-size:13px;line-height:1.75;color:#d4d4e8;}
+.psg-body p{margin-bottom:10px;}
+.gn{display:inline-flex;align-items:center;justify-content:center;background:rgba(232,197,71,.12);border:1px solid rgba(232,197,71,.3);border-radius:5px;color:var(--accent);font-family:'DM Mono',monospace;font-size:11px;font-weight:700;width:24px;height:20px;margin:0 2px;vertical-align:middle;}
+.bank-box{background:rgba(78,205,196,.06);border:1px solid rgba(78,205,196,.18);border-radius:11px;padding:13px;margin-bottom:13px;}
+.bank-box h4{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent3);margin-bottom:9px;}
+.bank-item{display:flex;gap:9px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px;line-height:1.45;color:#ccc;}
+.bank-item:last-child{border-bottom:none;}
+.bank-l{font-family:'DM Mono',monospace;font-size:12px;color:var(--accent3);font-weight:700;flex-shrink:0;width:16px;}
+.sec-box{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px;margin-bottom:9px;}
+.sec-box h4{font-family:'Playfair Display',serif;font-size:13px;color:var(--accent);margin-bottom:6px;}
+.sec-box p{font-size:12px;line-height:1.7;color:#b8b8d0;}
+
+/* QUESTION PANEL */
+.q-panel{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;}
+.q-panel::-webkit-scrollbar{width:4px;}
+.q-panel::-webkit-scrollbar-thumb{background:rgba(232,197,71,.18);border-radius:2px;}
+.q-hdr{display:flex;align-items:flex-start;gap:12px;margin-bottom:22px;}
+.q-hdr.gap-mode{margin-bottom:10px;}
+.q-num-pill{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.25);border-radius:8px;padding:5px 12px;white-space:nowrap;flex-shrink:0;}
+.q-part-lbl{font-size:13px;color:var(--dim);line-height:1.4;}
+.q-part-lbl b{color:var(--text);}
+.q-instr{background:rgba(255,255,255,.03);border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;font-size:13px;color:var(--dim);line-height:1.6;margin-bottom:22px;}
+.q-instr.gap-mode{font-size:12px;padding:7px 12px;margin-bottom:10px;}
+.q-stem{font-size:16px;line-height:1.7;color:var(--text);margin-bottom:20px;}
+
+/* MCQ */
+.opts{display:flex;flex-direction:column;gap:9px;margin-bottom:24px;}
+.opt{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 16px;cursor:pointer;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;transition:all .14s;width:100%;text-align:left;}
+.opt:hover{background:rgba(232,197,71,.07);border-color:rgba(232,197,71,.3);}
+.opt.sel{background:rgba(232,197,71,.12);border-color:var(--accent);color:var(--accent);}
+.opt-l{font-family:'DM Mono',monospace;font-size:12px;font-weight:600;background:rgba(255,255,255,.08);border-radius:6px;width:27px;height:27px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .14s;}
+.opt.sel .opt-l{background:var(--accent);color:#0f0e17;}
+
+/* Section opts */
+.sec-opts{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:24px;}
+.sec-opt{padding:12px 28px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.04);color:var(--dim);cursor:pointer;font-size:16px;font-family:'DM Mono',monospace;font-weight:600;transition:all .14s;}
+.sec-opt:hover{border-color:rgba(232,197,71,.4);color:var(--accent);}
+.sec-opt.sel{background:rgba(232,197,71,.12);border-color:var(--accent);color:var(--accent);}
+
+/* Text input */
+.q-inp{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;margin-bottom:24px;}
+.q-inp:focus{border-color:var(--accent);background:rgba(232,197,71,.04);}
+.q-inp::placeholder{color:rgba(255,255,255,.18);}
+
+/* Key word */
+.kw{display:inline-block;background:rgba(255,107,107,.13);border:1px solid rgba(255,107,107,.28);color:var(--accent2);font-family:'DM Mono',monospace;font-size:13px;font-weight:600;padding:4px 12px;border-radius:7px;letter-spacing:1px;margin-bottom:11px;}
+.s-box{background:rgba(255,255,255,.03);border-radius:9px;padding:12px 15px;font-size:14px;color:var(--dim);line-height:1.65;margin-bottom:9px;}
+.s-box b{color:var(--text);}
+
+/* Gap select (legacy, kept) */
+.gap-sel{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;cursor:pointer;margin-bottom:24px;width:auto;min-width:160px;transition:border-color .2s;}
+.gap-sel:focus{border-color:var(--accent);}
+.gap-sel option{background:#1a1a2e;}
+
+/* Part 6 unified panel */
+.gap-list{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.gap-row{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:9px 11px;transition:border-color .15s;min-height:0;}
+.gap-row:hover{border-color:rgba(232,197,71,.25);}
+.gap-row.has-ans{border-color:rgba(78,205,196,.4);background:rgba(78,205,196,.06);}
+.gap-num{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.22);border-radius:6px;padding:3px 7px;flex-shrink:0;white-space:nowrap;}
+.gap-ctx{flex:1;font-size:11.5px;color:var(--dim);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.gap-ctx b{color:var(--accent);}
+.gap-answer-btn{position:relative;flex-shrink:0;}
+.gap-badge{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;width:34px;height:34px;border-radius:8px;border:2px dashed rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:var(--dim);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s;user-select:none;}
+.gap-badge:hover{border-color:var(--accent);color:var(--accent);}
+.gap-badge.filled{background:var(--accent);border:2px solid var(--accent);color:#0f0e17;border-style:solid;}
+.gap-popup{position:absolute;right:0;top:50px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;z-index:100;box-shadow:0 12px 40px rgba(0,0,0,.6);display:none;flex-direction:column;align-items:center;gap:8px;min-width:160px;}
+.gap-popup.open{display:flex;}
+.gap-popup-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:2px;align-self:flex-start;}
+.gap-popup input{width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:10px 13px;color:var(--text);font-family:'DM Mono',monospace;font-size:20px;font-weight:700;text-transform:uppercase;text-align:center;outline:none;transition:border-color .15s;letter-spacing:3px;}
+.gap-popup input:focus{border-color:var(--accent);background:rgba(232,197,71,.05);}
+.gap-popup-hint{font-size:11px;color:var(--dim);text-align:center;}
+.gap-popup-clear{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.25);color:var(--accent2);border-radius:7px;padding:5px 14px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .14s;align-self:stretch;text-align:center;}
+.gap-popup-clear:hover{opacity:.75;}
+
+/* FOOTER NAV */
+.nav-footer{height:68px;border-top:1px solid var(--border);background:rgba(15,14,23,.96);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0;}
+.btn-prev,.btn-next{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 18px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .14s;white-space:nowrap;flex-shrink:0;}
+.btn-prev:hover{border-color:var(--accent);color:var(--accent);}
+.btn-prev:disabled{opacity:.3;cursor:not-allowed;}
+.btn-next{background:var(--accent);border-color:var(--accent);color:#0f0e17;font-weight:700;}
+.btn-next:hover{background:#f0d060;border-color:#f0d060;}
+
+/* Q DOT GRID */
+.q-grid{flex:1;display:flex;align-items:center;gap:5px;overflow-x:auto;padding:4px 0;}
+.q-grid::-webkit-scrollbar{height:8px;}
+.q-grid::-webkit-scrollbar-thumb{background:rgba(232,197,71,.45);border-radius:4px;}
+.q-grid::-webkit-scrollbar-track{background:rgba(255,255,255,.03);border-radius:4px;}
+.q-divider{width:1px;height:22px;background:var(--border);flex-shrink:0;margin:0 3px;}
+.qdot{width:30px;height:30px;border-radius:7px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--dim);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .14s;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.qdot:hover{border-color:rgba(232,197,71,.4);color:var(--accent);}
+.qdot.ans{background:rgba(78,205,196,.14);border-color:var(--accent3);color:var(--accent3);}
+.qdot.cur{background:rgba(232,197,71,.18);border-color:var(--accent);color:var(--accent);font-weight:700;}
+
+/* RESULT */
+#result-screen{display:none;position:fixed;inset:0;z-index:200;background:rgba(15,14,23,.98);align-items:center;justify-content:center;padding:40px;}
+#result-screen.visible{display:flex;}
+.res-inner{text-align:center;max-width:500px;width:100%;animation:fadeUp .5s ease both;}
+.res-emoji{font-size:64px;margin-bottom:16px;}
+.res-inner h2{font-family:'Playfair Display',serif;font-size:36px;margin-bottom:9px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.res-stats{display:flex;justify-content:center;gap:18px;margin:18px 0 22px;flex-wrap:wrap;}
+.res-stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 22px;}
+.res-stat .n{font-family:'Playfair Display',serif;font-size:36px;color:var(--accent);font-weight:700;}
+.res-stat .l{font-size:11px;color:var(--dim);margin-top:3px;text-transform:uppercase;letter-spacing:1px;}
+.btn-sub{background:var(--accent);color:#0f0e17;border:none;border-radius:12px;padding:14px 42px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:transform .14s,box-shadow .14s;}
+.btn-sub:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(232,197,71,.36);}
+
+/* TOAST */
+.toast{position:fixed;bottom:18px;right:18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 17px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px;z-index:300;transform:translateY(64px);opacity:0;transition:transform .25s ease,opacity .25s ease;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@media(max-width:720px){.psg-panel{display:none;}.q-panel{padding:18px 14px;}.tb-mid,.tb-chip{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="sp-inner">
+    <div class="sp-badge">Cambridge English</div>
+    <div class="sp-title">C1 Advanced</div>
+    <div class="sp-sub">Reading & Use of English · 56 Questions</div>
+    <div class="sp-form">
+      <label>Name</label>
+      <input type="text" id="inp-n" placeholder="Your name..." autocomplete="given-name">
+      <label>Last name</label>
+      <input type="text" id="inp-a" placeholder="Your last names..." autocomplete="family-name">
+      <div class="info-box">⏱ Time: <strong>1 hour 30 minutes</strong><br>💾 Auto-save — if there is a power outage or wifi failure, the time and answers are automatically restored.</div>
+      <button class="btn-start" onclick="startExam()">Start the exam →</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="tb-logo">C1 Advanced</div>
+    <div class="tb-chip">👤 <b id="tb-name"></b></div>
+    <div class="tb-mid"><div class="tb-part" id="tb-part">Part 1</div></div>
+    <div class="tb-right">
+      <div class="save-wrap"><div class="sdot" id="sdot"></div><span id="stxt">Saved</span></div>
+      <div class="timer" id="timer">1:30:00</div>
+      <button class="btn-deliver" onclick="confirmDeliver()">Submit ✓</button>
+    </div>
+  </div>
+  <div class="prog"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+
+  <div class="exam-area">
+    <div class="psg-panel" id="psg-panel"></div>
+    <div class="q-panel" id="q-panel"></div>
+  </div>
+
+  <div class="nav-footer">
+    <button class="btn-prev" id="btn-prev" onclick="navigate(-1)">← Previous</button>
+    <div class="q-grid" id="q-grid"></div>
+    <button class="btn-next" id="btn-next" onclick="navigate(1)">Next →</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result-screen">
+  <div class="res-inner">
+    <div id="rs-sending">
+      <div style="width:54px;height:54px;border:3px solid rgba(232,197,71,.16);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;"></div>
+      <p style="color:var(--dim);font-size:16px;">Sending to teacher…</p>
+    </div>
+    <div id="rs-done" style="display:none;">
+      <div class="res-emoji">🎓</div>
+      <h2>Exam submitted!</h2>
+      <p id="rs-name" style="color:var(--dim);margin-bottom:3px;"></p>
+      <div class="res-stats">
+        <div class="res-stat"><div class="n" id="rs-ans">0</div><div class="l">Answered</div></div>
+        <div class="res-stat"><div class="n">56</div><div class="l">Total</div></div>
+        <div class="res-stat"><div class="n" id="rs-time">—</div><div class="l">Time</div></div>
+      </div>
+      <div style="background:rgba(78,205,196,.08);border:1px solid rgba(78,205,196,.27);border-radius:13px;padding:17px;">
+        <p style="color:var(--accent3);font-size:15px;font-weight:600;">✅ Report sent to teacher</p>
+        <p style="color:var(--dim);font-size:13px;margin-top:5px;">Your teacher will receive an email with the <b>.html</b> file ready to open. A copy has also been downloaded to your device.</p>
+      </div>
+    </div>
+    <div id="rs-error" style="display:none;">
+      <div class="res-emoji">⚠️</div>
+      <h2 style="font-size:27px;">No connection</h2>
+      <p style="color:var(--dim);margin-bottom:16px;">Could not send. Your answers are saved locally.</p>
+      <div style="background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.27);border-radius:11px;padding:13px;margin-bottom:18px;">
+        <p style="color:var(--accent2);font-size:13px;line-height:1.6;">Once you regain your connection, reopen the page using the same first and last name. The exam will be retried automatically.</p>
+      </div>
+      <button class="btn-sub" onclick="retrySubmit()">🔄 Retry submission</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="t-icon">💾</span><span id="t-txt">Saved</span></div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIG EmailJS
+// ══════════════════════════════════════════
+const EJS_PUBLIC_KEY   = 'HANLAnqPTAAdx48Xf';
+const EJS_SERVICE_ID   = 'service_jl1mlfc';
+const EJS_TEMPLATE_ID  = 'template_ipbxeb4';
+const TEACHER_EMAIL    = 'ian@centreestudisnord.com';
+
+// ══════════════════════════════════════════
+// PASSAGES
+// ══════════════════════════════════════════
+const P = {
+  p1:{lbl:'Part 1 · Bridges for Wildlife',title:'Bridges for wildlife',html:`<p>The act of annual migration is common to many species. They migrate towards more <span class="gn">1</span> .......... climates, or return to breeding sites and feeding grounds. Roads and traffic, however, can <span class="gn">2</span> .......... a significant threat to some species' survival. To <span class="gn">3</span> .......... this problem, environmentalists and engineers around the world have put their heads together to devise 'wildlife bridges'.</p><p>In Canada, grizzly bears, wolverines and toads are just a few of the species <span class="gn">4</span> .......... use of grass-covered, cement bridges that cross the Trans-Canada Highway. <span class="gn">5</span> .........., on Australia's Christmas Island, a five-metre-high bridge across a busy road enables red crabs to pass safely from the rainforest to the ocean. The bridge has significantly reduced their casualty <span class="gn">6</span> .......... and averted traffic chaos.</p><p>In Sweden, plans are being <span class="gn">7</span> .......... up for a series of bridges across a main highway, which will allow the country's 250,000 reindeer to reach the mountains. Engineers must take <span class="gn">8</span> .......... of the fact that reindeer are easily frightened by traffic, and so make the bridge walls high enough to prevent the deer from jumping off.</p>`},
+
+  p2:{lbl:'Part 2 · The Museum of Modern Art',title:'The Museum of Modern Art — MoMA',html:`<p>When it opened in New York in 1929, MoMA prioritised contemporary rather than traditional art, and was quite <span class="gn">9</span> .......... other art museums. The public's response was overwhelmingly enthusiastic, as was that of the art world generally. Over the next ten years, MoMA required more space and relocated several times. It ended <span class="gn">10</span> .......... moving into the Manhattan building it still occupies to <span class="gn">11</span> .......... day.</p><p>Despite MoMA having more space, it struggles to house all of its collection, which has grown from just eight prints and one drawing to an impressive 200,000 works. These include <span class="gn">12</span> .......... only paintings, sculptures, prints and photographs, but also media and performance art works and architectural models. <span class="gn">13</span> .......... is more, MoMA also owns approximately two million film stills. To ensure that fresh material is always <span class="gn">14</span> .......... display, the exhibitions are regularly changed.</p><p>MoMA is dedicated <span class="gn">15</span> .......... its role as an educational institution. For this reason, every department maintains a study centre available to students. Furthermore, its archives are, <span class="gn">16</span> .......... a doubt, more comprehensive than those of any other modern art museum.</p>`},
+
+  p3:{lbl:'Part 3 · Hundreds rush to see a special bird',title:'Hundreds of people rush to view a special bird',html:`<p>Hundreds of birdwatchers recently rushed to a park in Washington DC, in the US, to catch a glimpse of a new arrival.</p><p>Despite the <span class="gn">17</span> .......... low winter temperatures, people came out to see a Painted Bunting, a small, brightly coloured bird that usually spends the winter in the warmer climate of Florida. The bird was a male — highly distinctive with its brilliant blue head, red breast and flashes of green and red on its back.</p><p>The bird's <span class="gn">18</span> .......... was announced on a birdwatchers' website and would have been <span class="gn">19</span> .......... just a few years ago. The <span class="gn">20</span> .......... sighting can probably be attributed to the <span class="gn">21</span> .......... that climate change is causing for hundreds of bird species.</p><p><span class="gn">22</span> .......... species all over the world are being pushed towards cooler areas as conditions heat up, or are losing suitable habitats altogether. Researchers warn that two thirds of North American bird species are now at risk of extinction. However, thanks to reports from community scientists all across the country, data about bird populations and their locations can be <span class="gn">23</span> .......... on maps in real time, and conservation efforts planned <span class="gn">24</span> ..........</p>`},
+
+  p4:{lbl:'Part 4 · Key Word Transformation',title:'Key Word Transformation'},
+
+  p5:{lbl:'Part 5 · Athletes Under Pressure',title:'Athletes under extreme pressure sometimes can\'t perform — why does it happen?',html:`<p>Cricket is a simple game played with a ball and a bat. One player runs up and bowls the ball towards a player from the opposing team, who tries to hit it. This should be relatively straightforward, but when Scott Boswell stood at the start of his bowling run-up at the 2001 English cricket cup final, he froze, unable to do the very thing he had been practising for years, uncomprehending as to what this incapacitating sensation was. It should have been the highlight of his career, but trepidation had been flowing through him since he'd found out he'd been selected. It had been touch and go — his man-of-the-match performance in the semi-final had earned him the right to play, but Boswell had lost form in the intervening three weeks, and his place had become less secure. At 10 p.m. the night before, the coach had asked Boswell whether he was up for it — the seed of doubt had been planted.</p><p>Sports anxiety is a reaction to pressure in a match, and an athlete's failure to manage it at a crucial moment can lead to a <strong>catastrophic</strong> drop in performance. The symptoms of anxiety are psychological — worry and fear — and physiological — including sweaty palms and an increased heart rate. This is something we might all go through, but it is clear we <strong>mere</strong> amateurs experience something which lacks the same <strong>dreadful</strong> intensity. Anxiety uses up attention and working memory, hindering performance. Athletes find themselves overthinking normally <strong>automatic</strong> processes. All this can result in an athlete 'choking' and this was Boswell's experience.</p><p>When non-elite athletes get anxious, it hampers their performance. In the last 30 seconds of tight basketball games players are 5.8% less likely to score than at other moments in the game. However, elite athletes manage to channel the anxiety they feel positively. They are also more adept at brushing off disappointments during competition. The champion golfer Annika Sorenstam jokes that she never hit a bad shot in her life because she doesn't dwell on them. Lesser players can be consumed by a blunder, but Sorenstam quickly grasps what's happened, files it away at the back of her mind, then gets on with the business of trying to repair the damage.</p><p>Anxiety doesn't just affect individuals. In everyday life, people can suffer by dint of simply being assigned to a collective in terms of, for example, age or gender. In sport, the team you play on can have a similar effect. In one study on stereotyping, scientists asked older and younger people to do some tasks that tested memory and the data produced revealed some fascinating insights into how we act. Some older participants were told that older and younger people did equally well on the tasks; others that younger people did better. When older people were told that they were just as capable as younger people, they subsequently achieved scores similar to the young people in the study. When they were told that they tended to do worse, they indeed did worse on the tasks. One sporting example of this 'stereotype effect' is provided by the South African cricket team. Between 1999 and 2017, South Africa played 19 major international tournaments and never qualified for a final. It was hard to deny that at crucial moments mistakes were consistently made which were explicable only by reference to a collective form of choking, the fact that they were playing together in a particular group.</p><p>So if anxiety in sport is such a pervasive factor, affecting individuals and groups alike, what can be done to remedy it? While some athletes are gifted with innate psychological advantages, there's nothing to suggest that coaches can't enable all players to benefit by employing a few simple ideas. It is often said that nothing can exactly equal the high stress of the biggest moments in matches. This notwithstanding, more pressurised realistic coaching can help athletes begin to cope with pressure on the field. A consequence of this will be that coaching can also help players develop a series of automatic reactions under pressure, without making them less alert to the unexpected, so they don't need to think consciously and worry about their actions.</p>`},
+
+  p6:{lbl:'Part 6 · National Parks',title:'National Parks — Four rangers discuss',
+    sections:[
+      {l:'A',t:`Many types of human activity, including hiking, cycling and horse-riding, have an impact on nature. Even small trails used by ecotourists and birdwatchers scare away some sensitive wildlife species or cause them to alter their behaviour. However, visitors help fund the operation of national parks and provide vital income for local people in many parts of the world. Therefore, putting a cap on how many come or banning their sporting activities is not a viable proposition. Introducing 'no-go' zones within a park, on the other hand, would protect wildlife while allowing visitors to enjoy the rest of the park. Such zones could be in more remote locations, away from roads. The majority of national parks already had roads running through them before they were given national park status. Closing these would prove unpopular, and in any case they are necessary infrastructure for both staff and visitors.`},
+      {l:'B',t:`National parks expose people to nature and increase the likelihood that they'll support environmental protection measures. If we introduce ceilings on how many can enjoy the parks, we risk losing that support. Having said that, I do think some changes are called for. Thanks to photo-sharing websites, picturesque vistas are being completely spoiled by crowds of tourists desperate to take the perfect selfie, and ecology should always be at the forefront of what we do. There are other issues too. Rather than continuing to allow outdoor sports such as off-road cycling in national parks, we need to identify more suitable spaces. And even for less damaging visitor pastimes, human activity must be restricted to particular sectors of the parks, using signage and physical barriers, while retaining the remainder for wildlife to live without human disturbance.`},
+      {l:'C',t:`The activities people do in national parks are changing, and park authorities need to keep up with that, whether it means introducing mountain bike trails or improving wi-fi access so tourists can use the internet. And park managers need to embrace the data which technology can provide. For example, GPS tagging shows that half of all photos by visitors are taken in less than 1% of each park. In other words, most visitors use a small, highly trafficked area of each park. Therefore, there's no need to set up visitor-free areas — there are plenty of those already. Roads are another matter, however. Existing ones need to be re-routed to avoid national parks, and new ones constructed outside park boundaries. Of course, this means other transport links must be improved. We have to allow as many people to visit as want to. If people can't go to national parks, they won't want to protect them, and we'll lose the parks completely.`},
+      {l:'D',t:`Can national parks continue to embrace ever-increasing levels of tourism while retaining what makes them unique? I can't see how. At one US national park, for example, a site which used to attract a few thousand visitors annually now gets two million a year, mainly because of tourists posting pictures of it online. This isn't an isolated case, and the consequences are disastrous — something we need to communicate to visitors. The time has come to draw a line. Parks must decide on a maximum number of people who can enter on a daily basis, both to protect wildlife and habitats and to ensure these continue to be pleasant places for people to visit. We also need to look at visitor activities. For example, forests maintained for commercial harvest offer a more appropriate setting for sports such as cross country cycling than national parks. Roads through national parks should also be closed so that traffic no longer goes through them, and visitors encouraged to travel to parks by other means.`}
+    ]},
+
+  p7:{lbl:'Part 7 · Recording an Audiobook',title:'What it was like to record my own audiobook',
+    bank:[
+      {l:'A',t:`I turned up on the first day in that naïve state, and sailed through the first couple of chapters. Friends had predicted that performing my own work would be a strange experience, but I always read and re-read my prose aloud as I write. In fact I had probably read each page of my novel aloud 20 or 30 times before I ever leaned forward to speak into that microphone.`},
+      {l:'B',t:`These I listened to and mimicked endlessly in my free time. On the final day, I walked into the sound studio and told the director that I wanted to re-record those specific lines of the book.`},
+      {l:'C',t:`It was my concern about having a stranger narrate episodes such as this that led me to try out for the job in the first place. I had a very specific way I wanted the dialogue to sound, and I wasn't entirely comfortable handing that task over to an unknown voice actor who might not share my take on it. A few days after I sent in my clips, the producer emailed me back to say she was willing to take me on.`},
+      {l:'D',t:`To give me the freedom I needed to generate this sense of flow, the director kept silent and let me plug away, breaking in only when my clothing rustled or my digestive system gurgled in open revolt. But she was a trained actress whose understanding of enunciation proved invaluable, as she always knew just which syllable I should emphasize in order to stop tripping over a word or phrase.`},
+      {l:'E',t:`It seemed my solo performance had inadvertently become a duet. I hugged a pillow to my abdomen to mask the rumbling, and managed to complete the chapter. The truth is that the marathon task of recording my own audiobook over four long days was proving far more demanding than I had expected from my audition.`},
+      {l:'F',t:`I began to appreciate that an almost athletic performance was required if we were to complete the reading in four days — the time normally allotted for an actual professional audiobook narrator. A fairly cracking pace would be required. Author or no, there was no glamour here.`},
+      {l:'G',t:`Now, however, I began to pay a lot of attention to them. I developed my own routines around when I needed to sip water, suck on a lozenge, or clear my throat. I found I was at pains to conceal from my listeners the unpleasant realities behind the performance.`}
+    ]},
+
+  p8:{lbl:'Part 8 · Frank Gehry Interview',title:'An interview with Frank Gehry, world-famous architect',
+    sub:'Rowan Moore spoke to the award-winning genius behind iconic buildings such as the Guggenheim Museum in Spain and the Walt Disney Concert Hall in Los Angeles on his 90th birthday',
+    sections:[
+      {l:'A',t:`'I've taken up flying,' says the American-Canadian architect Frank Gehry, as he sits opposite me in his Los Angeles office. 'A little bit.' Then he tells the story of how, in his youth, his cousin had a plane and would take him up in it. How he'd wanted to do this again, and ended up flying with Harrison Ford, the Hollywood superstar. This story is typical Gehry. It shows his sociable nature. He has a fascination with celebrity and high achievers, as many photographs around his office attest. Fame is definitely a thing with Gehry, but an ambiguous one. 'I find it very comforting to be here in Los Angeles because there are no spotlights except on the Hollywood film industry here. It gives people like me a kind of cloud cover,' he says. It's not untypical that a boast ('I've taken up flying') is followed by deprecation ('A little bit'). Most of all, the plane story captures his addiction to adventure — physical, emotional and imaginative. Many people credit this trait as driving the spirit of experimentation and playfulness that is evident in Gehry's architecture, which, while sometimes criticised for its crudeness and unfinished look, can never be ignored. The sense of fun is ever-present in his buildings that often seem to blur or transcend categories.`},
+      {l:'B',t:`His love of adventure and leaps into the unknown can also be seen in work Gehry did early on in his career with schoolchildren, in collaboration with his teacher sister, which was captured in a documentary directed by Jon Boorstin. The children built an imaginary city out of painted blocks and cardboard — coincidentally a sort of haphazard anticipation of the architecture Gehry would later do. They debated planning issues and elected a mayor. The ensuing heated discussions were all too chaotic for the children's regular teacher (Gehry now regrets his lack of tact when dealing with her), who cancelled the project. 'The point she missed,' Gehry says in the film, 'is that the conflict, when they start arguing with each other, is the real involvement in the city planning process that they were robbed of.' This work with the schoolchildren is one of a number of 'cliff jumps' in Gehry's life.`},
+      {l:'C',t:`The most pivotal jump concerns the house in Santa Monica where Gehry lived until recently with his wife, Berta, which he remodelled in the 1970s with all the disrespect for convention for which he was not yet world-famous — jagged angles, rough edges, and unglamorous materials such as plywood and corrugated metal. At that time, Gehry had built up a sizeable portfolio designing not-bad but not-exceptional commercial projects — apartment blocks, offices, shopping centres — with a sideline doing houses and studios for his artist friends. In 1980, he hosted a dinner at his house to celebrate the opening of one of his distinctly bland and uninspiring shopping centres. His developer client looked around the house. 'Is this what you like?' he asked. Gehry said he did. 'Well, if you like this you can't possibly like the shopping centre. Why are you doing it?' So Gehry, aged a little past 50, stopped working on all his commercial projects. He chose, almost, to start over again.`},
+      {l:'D',t:`As midlife crises go, it was one of the more creative and productive ones. If Gehry struggled for a while, he would eventually build up a reputation based on small- to medium-sized projects: more houses, a law school, a library, an ice rink. With the opening of the Bilbao Guggenheim in 1997, his success became both popular and global. This celebrated constellation of titanium and stone gave its name to a phenomenon — the 'Bilbao effect' — whereby beaten-up old cities would try to reverse their fortunes with spectacular architecture that would attract new visitors. It became the icon of what would be called iconic architecture. Other landmarks followed, such as the Walt Disney Concert Hall in downtown Los Angeles. (In fact, it was commissioned before Bilbao, but drawn out by, among other things, Gehry's efforts to convince clients and funders that he really should be allowed to build it.) By the time the Hollywood director Sydney Pollack made a feature-length documentary about him in 2005, it was common to call Gehry a 'genius', a 'modern master' or 'the greatest architect in the world'.`}
+    ]}
+};
+
+// ══════════════════════════════════════════
+// QUESTIONS  (56 total)
+// ══════════════════════════════════════════
+const QS = [
+  // PART 1 – Multiple-choice cloze (1-8)
+  {q:1,part:1,pk:'p1',type:'mcq',instr:'For each question, choose the correct answer (A, B, C or D) for each gap.',stem:'Gap <b>(1)</b> — choose the correct word.',opts:['supportive','favourable','hopeful','worthwhile']},
+  {q:2,part:1,pk:'p1',type:'mcq',instr:'For each question, choose the correct answer (A, B, C or D) for each gap.',stem:'Gap <b>(2)</b> — choose the correct word.',opts:['raise','pose','create','establish']},
+  {q:3,part:1,pk:'p1',type:'mcq',instr:'For each question, choose the correct answer (A, B, C or D) for each gap.',stem:'Gap <b>(3)</b> — choose the correct word.',opts:['address','oppose','challenge','approach']},
+  {q:4,part:1,pk:'p1',type:'mcq',instr:'For each question, choose the correct answer (A, B, C or D) for each gap.',stem:'Gap <b>(4)</b> — choose the correct word.',opts:['putting','gaining','making','getting']},
+  {q:5,part:1,pk:'p1',type:'mcq',instr:'For each question, choose the correct answer (A, B, C or D) for each gap.',stem:'Gap <b>(5)</b> — choose the correct word.',opts:['Respectively','Comparably','Similarly','Correspondingly']},
+  {q:6,part:1,pk:'p1',type:'mcq',instr:'For each question, choose the correct answer (A, B, C or D) for each gap.',stem:'Gap <b>(6)</b> — choose the correct word.',opts:['quota','percentage','scale','rate']},
+  {q:7,part:1,pk:'p1',type:'mcq',instr:'For each question, choose the correct answer (A, B, C or D) for each gap.',stem:'Gap <b>(7)</b> — choose the correct word.',opts:['shown','backed','drawn','worked']},
+  {q:8,part:1,pk:'p1',type:'mcq',instr:'For each question, choose the correct answer (A, B, C or D) for each gap.',stem:'Gap <b>(8)</b> — choose the correct word.',opts:['advantage','account','control','force']},
+
+  // PART 2 – Open cloze (9-16)
+  {q:9,part:2,pk:'p2',type:'text',instr:'For each question, write the correct answer. Write <strong>one</strong> word for each gap.',stem:'Write the missing word for blank <b>(9)</b>.'},
+  {q:10,part:2,pk:'p2',type:'text',instr:'For each question, write the correct answer. Write <strong>one</strong> word for each gap.',stem:'Write the missing word for blank <b>(10)</b>.'},
+  {q:11,part:2,pk:'p2',type:'text',instr:'For each question, write the correct answer. Write <strong>one</strong> word for each gap.',stem:'Write the missing word for blank <b>(11)</b>.'},
+  {q:12,part:2,pk:'p2',type:'text',instr:'For each question, write the correct answer. Write <strong>one</strong> word for each gap.',stem:'Write the missing word for blank <b>(12)</b>.'},
+  {q:13,part:2,pk:'p2',type:'text',instr:'For each question, write the correct answer. Write <strong>one</strong> word for each gap.',stem:'Write the missing word for blank <b>(13)</b>.'},
+  {q:14,part:2,pk:'p2',type:'text',instr:'For each question, write the correct answer. Write <strong>one</strong> word for each gap.',stem:'Write the missing word for blank <b>(14)</b>.'},
+  {q:15,part:2,pk:'p2',type:'text',instr:'For each question, write the correct answer. Write <strong>one</strong> word for each gap.',stem:'Write the missing word for blank <b>(15)</b>.'},
+  {q:16,part:2,pk:'p2',type:'text',instr:'For each question, write the correct answer. Write <strong>one</strong> word for each gap.',stem:'Write the missing word for blank <b>(16)</b>.'},
+
+  // PART 3 – Word formation (17-24)
+  {q:17,part:3,pk:'p3',type:'word',word:'COMMON',instr:'For each question, use the word in CAPITALS to form a word that fits in the gap.',stem:'Form a new word from <b>COMMON</b> for gap <b>(17)</b>.'},
+  {q:18,part:3,pk:'p3',type:'word',word:'PRESENT',instr:'For each question, use the word in CAPITALS to form a word that fits in the gap.',stem:'Form a new word from <b>PRESENT</b> for gap <b>(18)</b>.'},
+  {q:19,part:3,pk:'p3',type:'word',word:'THINK',instr:'For each question, use the word in CAPITALS to form a word that fits in the gap.',stem:'Form a new word from <b>THINK</b> for gap <b>(19)</b>.'},
+  {q:20,part:3,pk:'p3',type:'word',word:'EXCEPT',instr:'For each question, use the word in CAPITALS to form a word that fits in the gap.',stem:'Form a new word from <b>EXCEPT</b> for gap <b>(20)</b>.'},
+  {q:21,part:3,pk:'p3',type:'word',word:'DISRUPT',instr:'For each question, use the word in CAPITALS to form a word that fits in the gap.',stem:'Form a new word from <b>DISRUPT</b> for gap <b>(21)</b>.'},
+  {q:22,part:3,pk:'p3',type:'word',word:'COUNT',instr:'For each question, use the word in CAPITALS to form a word that fits in the gap.',stem:'Form a new word from <b>COUNT</b> for gap <b>(22)</b>.'},
+  {q:23,part:3,pk:'p3',type:'word',word:'VISUAL',instr:'For each question, use the word in CAPITALS to form a word that fits in the gap.',stem:'Form a new word from <b>VISUAL</b> for gap <b>(23)</b>.'},
+  {q:24,part:3,pk:'p3',type:'word',word:'ACCORD',instr:'For each question, use the word in CAPITALS to form a word that fits in the gap.',stem:'Form a new word from <b>ACCORD</b> for gap <b>(24)</b>.'},
+
+  // PART 4 – Key word transformation (25-30)
+  {q:25,part:4,pk:'p4',type:'keyw',key:'RESULT',instr:'Complete the second sentence using 3–6 words including the keyword. Do not change the keyword.',s1:"If you don't complete the form correctly, it will be rejected.",s2:'Failure to complete the form correctly will __________ rejection.'},
+  {q:26,part:4,pk:'p4',type:'keyw',key:'CONCLUSION',instr:'Complete the second sentence using 3–6 words including the keyword. Do not change the keyword.',s1:"By the end of the meeting, we hadn't made any progress.",s2:'The meeting came __________ any progress being made.'},
+  {q:27,part:4,pk:'p4',type:'keyw',key:'PREVENTED',instr:'Complete the second sentence using 3–6 words including the keyword. Do not change the keyword.',s1:"John would have begun his journey earlier if he hadn't had a headache.",s2:'Having a headache was __________ off on his journey earlier.'},
+  {q:28,part:4,pk:'p4',type:'keyw',key:'CIRCUMSTANCES',instr:'Complete the second sentence using 3–6 words including the keyword. Do not change the keyword.',s1:'Never leave your bag unattended at the airport.',s2:'Under __________ left unattended at the airport.'},
+  {q:29,part:4,pk:'p4',type:'keyw',key:'PUT',instr:'Complete the second sentence using 3–6 words including the keyword. Do not change the keyword.',s1:"I regret tolerating John's rudeness for so long.",s2:"I wish I __________ John's rudeness for so long."},
+  {q:30,part:4,pk:'p4',type:'keyw',key:'HAVE',instr:'Complete the second sentence using 3–6 words including the keyword. Do not change the keyword.',s1:"Only time will tell whether the team's new manager will stay in post for long.",s2:"It remains __________ long the team's new manager will stay in post."},
+
+  // PART 5 – Multiple choice (31-36)
+  {q:31,part:5,pk:'p5',type:'mcq',instr:'For each question (31-36), choose the correct answer (A, B, C or D).',stem:'When describing Boswell\'s problem in the first paragraph, the writer suggests that Boswell',opts:["hadn't been worried about playing in the match.",'had suffered similar issues in the past.',"didn't want to let his coach down.",'was unsure what was happening to him.']},
+  {q:32,part:5,pk:'p5',type:'mcq',instr:'For each question (31-36), choose the correct answer (A, B, C or D).',stem:"What is the writer's purpose in the second paragraph?",opts:['to summarise an argument','to elaborate on a condition','to explain his attitude','to provide an example']},
+  {q:33,part:5,pk:'p5',type:'mcq',instr:'For each question (31-36), choose the correct answer (A, B, C or D).',stem:'Which of these words in the second paragraph is used dismissively?',opts:['catastrophic','mere','dreadful','automatic']},
+  {q:34,part:5,pk:'p5',type:'mcq',instr:'For each question (31-36), choose the correct answer (A, B, C or D).',stem:'In the third paragraph, the writer stresses that elite athletes can',opts:['play just as poorly under pressure as non-elite athletes.','access higher levels of self-confidence than non-elite athletes.','cope with their mistakes differently from non-elite athletes.','analyse their errors more carefully than non-elite athletes.']},
+  {q:35,part:5,pk:'p5',type:'mcq',instr:'For each question (31-36), choose the correct answer (A, B, C or D).',stem:'In the fourth paragraph, the writer mentions a study in order to highlight that',opts:['sports teams can overcome a collective form of nervousness.','performance can be negatively affected by inclusion in a group.','statistics can be a powerful tool for analysing behaviour.','pressure can affect areas of experience outside sport.']},
+  {q:36,part:5,pk:'p5',type:'mcq',instr:'For each question (31-36), choose the correct answer (A, B, C or D).',stem:'What does the writer say is key to helping sportspeople overcome anxiety?',opts:["drawing on a player's natural resources of calm",'helping players learn relaxation techniques','making players realise that change is their responsibility','exposing players to authentic match conditions in training']},
+
+  // PART 6 – Multiple matching – national parks (37-40)
+  {q:37,part:6,pk:'p6',type:'sec',instr:'Choose the section (A, B, C or D) that answers each question. Each section may be chosen more than once.',stem:'Which park ranger shares an opinion with D about mountain biking in national parks?'},
+  {q:38,part:6,pk:'p6',type:'sec',instr:'Choose the section (A, B, C or D) that answers each question. Each section may be chosen more than once.',stem:'Which park ranger has a different view from C about roads in national parks?'},
+  {q:39,part:6,pk:'p6',type:'sec',instr:'Choose the section (A, B, C or D) that answers each question. Each section may be chosen more than once.',stem:'Which park ranger expresses a different view from the others about limiting visitor numbers to national parks?'},
+  {q:40,part:6,pk:'p6',type:'sec',instr:'Choose the section (A, B, C or D) that answers each question. Each section may be chosen more than once.',stem:"Which park ranger shares D's view about the impact of social media on national parks?"},
+
+  // PART 7 – Gapped text – audiobook (41-46)
+  {q:41,part:7,pk:'p7',type:'gap',instr:'Six paragraphs have been removed from the text. For each gap (41–46), choose the correct answer (A–G). There is one extra paragraph you do not need.',ctx:'…by the hypersensitive microphone. <b>[41]</b> As it turned out, that had been deceptively simple.'},
+  {q:42,part:7,pk:'p7',type:'gap',instr:'Six paragraphs have been removed from the text. For each gap (41–46), choose the correct answer (A–G). There is one extra paragraph you do not need.',ctx:'…sparring between two teenage boys. <b>[42]</b> I was thrilled to hear it, but little did I know…'},
+  {q:43,part:7,pk:'p7',type:'gap',instr:'Six paragraphs have been removed from the text. For each gap (41–46), choose the correct answer (A–G). There is one extra paragraph you do not need.',ctx:'…director for occasional company. <b>[43]</b> This familiarity with the material wasn\'t enough, however.'},
+  {q:44,part:7,pk:'p7',type:'gap',instr:'Six paragraphs have been removed from the text. For each gap (41–46), choose the correct answer (A–G). There is one extra paragraph you do not need.',ctx:'…sounded alert and energetic the entire time. <b>[44]</b> To make matters more difficult, I was fighting a nasty cold.'},
+  {q:45,part:7,pk:'p7',type:'gap',instr:'Six paragraphs have been removed from the text. For each gap (41–46), choose the correct answer (A–G). There is one extra paragraph you do not need.',ctx:'…I had never in my life spent a moment considering. <b>[45]</b> It occurred to me that my efforts in this regard were pretty analogous to what we novelists do.'},
+  {q:46,part:7,pk:'p7',type:'gap',instr:'Six paragraphs have been removed from the text. For each gap (41–46), choose the correct answer (A–G). There is one extra paragraph you do not need.',ctx:'…appear to have arrived there with fluency and ease. <b>[46]</b> I was always very grateful for these tips…'},
+
+  // PART 8 – Multiple matching – Gehry (47-56)
+  {q:47,part:8,pk:'p8',type:'sec',instr:'For each question (47–56), choose the section (A, B, C or D). Each section may be chosen more than once.',stem:'Which section mentions the mixed feelings Gehry has about being the focus of attention?'},
+  {q:48,part:8,pk:'p8',type:'sec',instr:'For each question (47–56), choose the section (A, B, C or D). Each section may be chosen more than once.',stem:"Which section mentions the economic impact of Gehry's work?"},
+  {q:49,part:8,pk:'p8',type:'sec',instr:'For each question (47–56), choose the section (A, B, C or D). Each section may be chosen more than once.',stem:'Which section mentions how Gehry decided to abandon his previous approach to architecture?'},
+  {q:50,part:8,pk:'p8',type:'sec',instr:'For each question (47–56), choose the section (A, B, C or D). Each section may be chosen more than once.',stem:'Which section mentions an instance where Gehry showed a lack of interpersonal skills?'},
+  {q:51,part:8,pk:'p8',type:'sec',instr:'For each question (47–56), choose the section (A, B, C or D). Each section may be chosen more than once.',stem:"Which section mentions Gehry's concern to avoid appearing immodest?"},
+  {q:52,part:8,pk:'p8',type:'sec',instr:'For each question (47–56), choose the section (A, B, C or D). Each section may be chosen more than once.',stem:"Which section mentions Gehry's indifference to established architectural rules?"},
+  {q:53,part:8,pk:'p8',type:'sec',instr:'For each question (47–56), choose the section (A, B, C or D). Each section may be chosen more than once.',stem:'Which section mentions a time when Gehry successfully used his powers of persuasion?'},
+  {q:54,part:8,pk:'p8',type:'sec',instr:'For each question (47–56), choose the section (A, B, C or D). Each section may be chosen more than once.',stem:'Which section mentions a period in Gehry\'s career when he produced less than inspiring work?'},
+  {q:55,part:8,pk:'p8',type:'sec',instr:'For each question (47–56), choose the section (A, B, C or D). Each section may be chosen more than once.',stem:'Which section mentions an experiment that Gehry felt was misunderstood?'},
+  {q:56,part:8,pk:'p8',type:'sec',instr:'For each question (47–56), choose the section (A, B, C or D). Each section may be chosen more than once.',stem:"Which section mentions how Gehry's comments reveal fundamental aspects of his character?"},
+];
+
+const PNAMES={1:'Part 1 · Multiple-choice cloze',2:'Part 2 · Open cloze',3:'Part 3 · Word formation',4:'Part 4 · Key word transformation',5:'Part 5 · Multiple choice',6:'Part 6 · Multiple matching',7:'Part 7 · Gapped text',8:'Part 8 · Multiple matching'};
+const TOTAL=56;
+
+// The first gap question number for each part that uses the unified screen
+const GAP_FIRST_Q = 41;
+const GAP_LAST_Q  = 46;
+
+let studentName='',answers={},curIdx=0,startTime=null,timerInt=null,autoInt=null,submitPayload=null;
+
+// ── RENDER ──
+function render(idx){
+  const q=QS[idx];
+  const pp=document.getElementById('psg-panel');
+  const qp=document.getElementById('q-panel');
+
+  // Passage
+  if(q.pk==='p4'){pp.style.display='none';}
+  else{
+    pp.style.display='';
+    const pass=P[q.pk];
+    let ph=`<div class="psg-label">${pass.lbl}</div><div class="psg-title">${pass.title}</div>`;
+    if(pass.sub) ph+=`<div class="psg-sub">${pass.sub}</div>`;
+    if(q.part===7&&pass.bank){
+      ph+=`<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 20px;margin-bottom:13px;"><div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;font-family:'DM Mono',monospace;">Full passage text</div><div style="font-size:13px;line-height:1.8;color:var(--dim);"><p style="margin-bottom:12px;">It was around noon on the third gruelling day of recording the audiobook of my novel, <em>The Gargoyle Hunters</em>, when the disembodied voice of my director burst into my headset to inform me that my empty stomach was making noises loud enough to be picked up by the hypersensitive microphone.</p><div style="display:flex;align-items:center;gap:10px;margin:14px 0;"><span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.22);border-radius:7px;padding:4px 10px;flex-shrink:0;">[41]</span><div style="flex:1;height:1px;background:rgba(232,197,71,.15);"></div></div><p style="margin-bottom:12px;">As it turned out, that had been deceptively simple. All the audiobook producer asked me to do was record myself reading the opening pages of my book in the comfort of my own home. But so I was sure she was in a position to fully evaluate my ability, I also recorded a comic sequence from another section of the novel, involving some verbal sparring between two teenage boys.</p><div style="display:flex;align-items:center;gap:10px;margin:14px 0;"><span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.22);border-radius:7px;padding:4px 10px;flex-shrink:0;">[42]</span><div style="flex:1;height:1px;background:rgba(232,197,71,.15);"></div></div><p style="margin-bottom:12px;">I was thrilled to hear it, but little did I know that reading into your phone for 16 minutes on a lazy Sunday at home in no way prepares you for the arduous ordeal of being locked in a tiny recording booth for six or seven hours a day — reading, reading, reading, with only the voice of a distant director for occasional company.</p><div style="display:flex;align-items:center;gap:10px;margin:14px 0;"><span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.22);border-radius:7px;padding:4px 10px;flex-shrink:0;">[43]</span><div style="flex:1;height:1px;background:rgba(232,197,71,.15);"></div></div><p style="margin-bottom:12px;">This familiarity with the material wasn't enough, however. Before the promise of lunch was even a glimmer on the horizon, weariness set in, and it dawned on me that this was going to be an exhausting, long-distance slog during which, paradoxically, it was essential that I sounded alert and energetic the entire time.</p><div style="display:flex;align-items:center;gap:10px;margin:14px 0;"><span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.22);border-radius:7px;padding:4px 10px;flex-shrink:0;">[44]</span><div style="flex:1;height:1px;background:rgba(232,197,71,.15);"></div></div><p style="margin-bottom:12px;">To make matters more difficult, I was fighting a nasty cold. Still, I'm a hard worker, and as the hours and days progressed, I began to figure out the craft of audiobook narration. I became acutely sensitized to the subtleties of mouth moisture, which generated sensations and sounds I had never in my life spent a moment considering.</p><div style="display:flex;align-items:center;gap:10px;margin:14px 0;"><span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.22);border-radius:7px;padding:4px 10px;flex-shrink:0;">[45]</span><div style="flex:1;height:1px;background:rgba(232,197,71,.15);"></div></div><p style="margin-bottom:12px;">It occurred to me that my efforts in this regard were pretty analogous to what we novelists do. The whole idea is to hide the struggle of creation from the reader so that the words on the page appear to have arrived there with fluency and ease.</p><div style="display:flex;align-items:center;gap:10px;margin:14px 0;"><span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--accent);background:rgba(232,197,71,.1);border:1px solid rgba(232,197,71,.22);border-radius:7px;padding:4px 10px;flex-shrink:0;">[46]</span><div style="flex:1;height:1px;background:rgba(232,197,71,.15);"></div></div><p style="margin-bottom:0;">I was always very grateful for these tips, and overall, the experience of narrating my own audiobook proved immensely satisfying. As a complete novice with no technical training, I was never going to turn myself into an experienced narrator overnight. But I did have one ace up my sleeve: I happened to know the author's intention behind every line.</p></div></div>`;
+    }
+    if((q.part===6||q.part===8)&&pass.sections){
+      pass.sections.forEach(s=>ph+=`<div class="sec-box"><h4>Section ${s.l}</h4><p>${s.t}</p></div>`);
+    } else if(pass.html){
+      ph+=`<div class="psg-body">${pass.html}</div>`;
+    }
+    pp.innerHTML=ph;
+  }
+
+  // Question header
+  const qLabel = q.type==='gap' ? `Questions ${GAP_FIRST_Q}–${GAP_LAST_Q} / ${TOTAL}` : `Question ${q.q} / ${TOTAL}`;
+  const gapMode = q.type==='gap' ? ' gap-mode' : '';
+  let h=`<div class="q-hdr${gapMode}"><div class="q-num-pill">${qLabel}</div><div class="q-part-lbl"><b>${PNAMES[q.part]}</b></div></div>
+  <div class="q-instr${gapMode}">${q.instr}</div>`;
+
+  if(q.type==='mcq'){
+    h+=`<div class="q-stem">${q.stem}</div><div class="opts">`;
+    q.opts.forEach((o,i)=>{
+      const l=String.fromCharCode(65+i);
+      h+=`<button class="opt${answers[q.q]===l?' sel':''}" onclick="pickMCQ(${q.q},'${l}',this)"><span class="opt-l">${l}</span>${o}</button>`;
+    });
+    h+=`</div>`;
+  } else if(q.type==='text'){
+    h+=`<div class="q-stem">${q.stem}</div><input class="q-inp" id="qinp" type="text" placeholder="Write one word…" value="${answers[q.q]||''}" oninput="pickTxt(${q.q},this.value)" autocomplete="off" spellcheck="false">`;
+  } else if(q.type==='word'){
+    h+=`<div style="margin-bottom:13px"><span style="font-family:'DM Mono',monospace;font-size:16px;color:var(--accent2);font-weight:700;letter-spacing:2px;">${q.word}</span></div>
+    <div class="q-stem">${q.stem}</div><input class="q-inp" id="qinp" type="text" placeholder="Write the new word…" value="${answers[q.q]||''}" oninput="pickTxt(${q.q},this.value)" autocomplete="off" spellcheck="false">`;
+  } else if(q.type==='keyw'){
+    h+=`<div class="s-box"><b>${q.s1}</b></div>
+    <div style="margin:11px 0 9px"><span class="kw">${q.key}</span></div>
+    <div class="s-box">${q.s2.replace('__________','<span style="color:var(--accent);font-weight:700">__________</span>')}</div>
+    <input class="q-inp" id="qinp" type="text" placeholder="3–6 words including '${q.key}'…" value="${answers[q.q]||''}" oninput="pickTxt(${q.q},this.value)" autocomplete="off" spellcheck="false">`;
+  } else if(q.type==='gap'){
+    // Unified Part 7: show all gaps 41–46 in one screen
+    const gapQs = QS.filter(x=>x.type==='gap');
+    const pass7=P[q.pk];
+    if(pass7&&pass7.bank){
+      h+=`<div class="bank-box"><h4>Paragraphs A – G</h4>`;
+      pass7.bank.forEach(b=>h+=`<div class="bank-item"><div class="bank-l">${b.l}</div><div>${b.t}</div></div>`);
+      h+=`</div>`;
+    }
+    h += `<div class="gap-list">`;
+    gapQs.forEach(gq=>{
+      const ans = answers[gq.q]||'';
+      h += `<div class="gap-row${ans?' has-ans':''}" id="gap-row-${gq.q}">
+        <div class="gap-num">[${gq.q}]</div>
+        <div class="gap-ctx">"…${gq.ctx}…"</div>
+        <div class="gap-answer-btn">
+          <div class="gap-badge${ans?' filled':''}" id="gap-badge-${gq.q}" onclick="toggleGapPopup(${gq.q},event)">${ans||'?'}</div>
+          <div class="gap-popup" id="gap-popup-${gq.q}">
+            <div class="gap-popup-title">Gap ${gq.q} — letter (A–G)</div>
+            <input type="text" maxlength="1" id="gap-inp-${gq.q}" value="${ans}" placeholder="A–G"
+              oninput="setGapAns(${gq.q},this.value)"
+              onkeydown="gapKeyNav(event,${gq.q})"
+              autocomplete="off" spellcheck="false">
+            <div class="gap-popup-hint">Type A, B, C, D, E, F or G</div>
+            ${ans?`<button class="gap-popup-clear" onclick="clearGapAns(${gq.q})">✕ Clear answer</button>`:''}
+          </div>
+        </div>
+      </div>`;
+    });
+    h += `</div>
+    <p style="font-size:12px;color:var(--dim);text-align:center;">Click <b>?</b> next to each gap to type your letter · Remember there is one extra paragraph you don't need</p>`;
+  } else if(q.type==='sec'){
+    h+=`<div class="q-stem">${q.stem}</div>
+    <div class="sec-opts">${['A','B','C','D'].map(l=>`<button class="sec-opt${answers[q.q]===l?' sel':''}" onclick="pickSec(${q.q},'${l}',this)">${l}</button>`).join('')}</div>`;
+  }
+
+  qp.innerHTML=h;
+  const inp=document.getElementById('qinp');
+  if(inp) setTimeout(()=>inp.focus(),50);
+
+  document.getElementById('tb-part').innerHTML=`<b>${PNAMES[q.part]}</b>`;
+  updateGrid();
+  updateProg();
+  document.getElementById('btn-prev').disabled=idx===0;
+  const last=idx===QS.length-1;
+  const bn=document.getElementById('btn-next');
+  if(last){bn.textContent='Submit ✓';bn.onclick=confirmDeliver;}
+  else{bn.textContent='Next →';bn.onclick=()=>navigate(1);}
+  curIdx=idx;
+}
+
+// ── ANSWERS ──
+function pickMCQ(q,l,btn){
+  btn.parentElement.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  answers[q]=l; dbSave(); updateGrid(); updateProg();
+}
+function pickSec(q,l,btn){
+  btn.parentElement.querySelectorAll('.sec-opt').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  answers[q]=l; dbSave(); updateGrid(); updateProg();
+}
+function pickTxt(q,v){ answers[q]=v.trim(); dbSave(); updateGrid(); updateProg(); }
+
+// ── PART 7 POPUP ──
+function toggleGapPopup(qNum, e){
+  e.stopPropagation();
+  const popup = document.getElementById(`gap-popup-${qNum}`);
+  const isOpen = popup.classList.contains('open');
+  document.querySelectorAll('.gap-popup.open').forEach(p=>p.classList.remove('open'));
+  if(!isOpen){
+    popup.classList.add('open');
+    setTimeout(()=>{
+      const inp = document.getElementById(`gap-inp-${qNum}`);
+      if(inp){ inp.select(); inp.focus(); }
+    },30);
+  }
+}
+function setGapAns(qNum, val){
+  const letter = val.toUpperCase().replace(/[^A-G]/g,'');
+  const inp = document.getElementById(`gap-inp-${qNum}`);
+  if(inp) inp.value = letter;
+  answers[qNum] = letter;
+  const badge = document.getElementById(`gap-badge-${qNum}`);
+  if(badge){ badge.textContent = letter||'?'; badge.className = 'gap-badge'+(letter?' filled':''); }
+  const row = document.getElementById(`gap-row-${qNum}`);
+  if(row){ row.className = 'gap-row'+(letter?' has-ans':''); }
+  const popup = document.getElementById(`gap-popup-${qNum}`);
+  if(popup){
+    let cb = popup.querySelector('.gap-popup-clear');
+    if(letter && !cb){
+      cb = document.createElement('button');
+      cb.className='gap-popup-clear';
+      cb.textContent='✕ Clear answer';
+      cb.onclick=()=>clearGapAns(qNum);
+      popup.appendChild(cb);
+    } else if(!letter && cb){ cb.remove(); }
+  }
+  dbSave(); updateGrid(); updateProg();
+  if(letter){
+    const gapQs = QS.filter(x=>x.type==='gap');
+    const curGapIdx = gapQs.findIndex(x=>x.q===qNum);
+    const nextGap = gapQs[curGapIdx+1];
+    setTimeout(()=>{
+      document.getElementById(`gap-popup-${qNum}`).classList.remove('open');
+      if(nextGap){
+        const nextPopup = document.getElementById(`gap-popup-${nextGap.q}`);
+        if(nextPopup){
+          nextPopup.classList.add('open');
+          setTimeout(()=>{ const ni=document.getElementById(`gap-inp-${nextGap.q}`); if(ni){ni.select();ni.focus();} },30);
+        }
+      }
+    },220);
+  }
+}
+function clearGapAns(qNum){
+  answers[qNum]='';
+  const inp = document.getElementById(`gap-inp-${qNum}`);
+  if(inp) inp.value='';
+  const badge = document.getElementById(`gap-badge-${qNum}`);
+  if(badge){ badge.textContent='?'; badge.className='gap-badge'; }
+  const row = document.getElementById(`gap-row-${qNum}`);
+  if(row) row.className='gap-row';
+  const cb = document.querySelector(`#gap-popup-${qNum} .gap-popup-clear`);
+  if(cb) cb.remove();
+  dbSave(); updateGrid(); updateProg();
+}
+function gapKeyNav(e, qNum){
+  if(e.key==='Escape'){ document.getElementById(`gap-popup-${qNum}`).classList.remove('open'); }
+  if(e.key==='Enter'){ setGapAns(qNum, document.getElementById(`gap-inp-${qNum}`).value); }
+}
+
+// ── NAV ──
+function navigate(d){
+  let n=curIdx+d;
+  // Skip gap questions 42-46 (shown on the unified q41 screen)
+  while(n>=0&&n<QS.length&&QS[n].type==='gap'&&QS[n].q!==GAP_FIRST_Q) n+=d;
+  if(n<0||n>=QS.length) return;
+  render(n);
+  document.getElementById('q-panel').scrollTop=0;
+  document.getElementById('psg-panel').scrollTop=0;
+}
+function goTo(idx){
+  if(QS[idx].type==='gap'&&QS[idx].q!==GAP_FIRST_Q) idx=QS.findIndex(x=>x.q===GAP_FIRST_Q);
+  render(idx);
+  document.getElementById('q-panel').scrollTop=0;
+  document.getElementById('psg-panel').scrollTop=0;
+}
+
+// ── GRID ──
+function buildGrid(){
+  const g=document.getElementById('q-grid'); g.innerHTML='';
+  let lp=null;
+  QS.forEach((q,i)=>{
+    if(q.part!==lp){
+      if(lp!==null){const d=document.createElement('div');d.className='q-divider';g.appendChild(d);}
+      lp=q.part;
+    }
+    const b=document.createElement('button');
+    b.className='qdot';b.textContent=q.q;b.id=`qd${q.q}`;
+    b.onclick=()=>goTo(i);g.appendChild(b);
+  });
+}
+function updateGrid(){
+  QS.forEach((q,i)=>{
+    const b=document.getElementById(`qd${q.q}`);if(!b)return;
+    b.className='qdot';
+    if(answers[q.q]&&answers[q.q]!=='') b.classList.add('ans');
+    if(q.type==='gap'&&q.q!==GAP_FIRST_Q){
+      const gFirstIdx=QS.findIndex(x=>x.q===GAP_FIRST_Q);
+      if(gFirstIdx===curIdx) b.classList.add('cur');
+    } else {
+      if(i===curIdx) b.classList.add('cur');
+    }
+  });
+}
+function updateProg(){
+  const done=Object.values(answers).filter(v=>v&&v!=='').length;
+  document.getElementById('prog-fill').style.width=(done/TOTAL*100)+'%';
+}
+
+// ── TIMER ──
+function startTimer(){
+  const tot=90*60;
+  timerInt=setInterval(()=>{
+    const rem=tot-Math.floor((Date.now()-startTime)/1000);
+    if(rem<=0){clearInterval(timerInt);document.getElementById('timer').textContent='0:00:00';showToast('⏰','Time\'s up! Submitting…');setTimeout(()=>doSubmit(true),1500);return;}
+    const h=Math.floor(rem/3600),m=Math.floor((rem%3600)/60),s=rem%60;
+    const el=document.getElementById('timer');
+    el.textContent=`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    el.className=rem<600?'timer warn':'timer';
+  },1000);
+}
+
+// ── STORAGE ──
+function sKey(){return `c1exam_${studentName.replace(/\s+/g,'_')}`;}
+let dbTimer;
+function dbSave(){clearTimeout(dbTimer);dbTimer=setTimeout(saveNow,700);}
+function saveNow(){
+  const d={studentName,answers,elapsed:startTime?Math.floor((Date.now()-startTime)/1000):0,ts:Date.now()};
+  try{
+    localStorage.setItem(sKey(),JSON.stringify(d));
+    const bk=sKey()+'_bk_'+Date.now();
+    const bks=Object.keys(localStorage).filter(k=>k.startsWith(sKey()+'_bk_')).sort();
+    if(bks.length>=3)localStorage.removeItem(bks[0]);
+    localStorage.setItem(bk,JSON.stringify(d));
+    flashSave();
+  }catch(e){Object.keys(localStorage).filter(k=>k.includes('_bk_')).forEach(k=>localStorage.removeItem(k));try{localStorage.setItem(sKey(),JSON.stringify(d));}catch(e2){}}
+}
+function flashSave(){
+  const dot=document.getElementById('sdot'),txt=document.getElementById('stxt');
+  dot.classList.add('on');txt.textContent='Saving…';
+  setTimeout(()=>{dot.classList.remove('on');txt.textContent='Saved ✓';},700);
+}
+function loadSaved(){
+  try{const r=localStorage.getItem(sKey());if(!r)return null;const d=JSON.parse(r);if(d.answers){answers=d.answers;return d.elapsed||0;}}catch(e){}return null;
+}
+
+// ── TOAST ──
+function showToast(icon,msg){
+  const t=document.getElementById('toast');
+  document.getElementById('t-icon').textContent=icon;
+  document.getElementById('t-txt').textContent=msg;
+  t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── START ──
+function startExam(){
+  const n=document.getElementById('inp-n').value.trim();
+  const a=document.getElementById('inp-a').value.trim();
+  if(!n||!a){showToast('⚠️','Please enter your first and last name');return;}
+  studentName=`${n} ${a}`;
+  document.getElementById('tb-name').textContent=studentName;
+  try{if(localStorage.getItem(sKey()+'_submitted')==='1'){localStorage.removeItem(sKey()+'_submitted');Object.keys(localStorage).filter(k=>k.startsWith(sKey()+'_bk_')).forEach(k=>localStorage.removeItem(k));localStorage.removeItem(sKey());answers={};}}catch(e){}
+  const saved=loadSaved();
+  document.getElementById('splash').style.display='none';
+  document.getElementById('app').style.display='flex';
+  buildGrid();
+  if(saved!==null){
+    startTime=Date.now()-(saved*1000);
+    const rem=90*60-saved;
+    showToast('⏱️',`Session restored · Time remaining: ${Math.floor(rem/3600)}:${String(Math.floor((rem%3600)/60)).padStart(2,'0')}:${String(rem%60).padStart(2,'0')}`);
+  } else {startTime=Date.now();}
+  render(0);startTimer();
+  autoInt=setInterval(()=>{saveNow();showToast('💾','Auto-saved');},30000);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow();});
+  window.addEventListener('beforeunload',()=>saveNow());
+  document.addEventListener('click',()=>{ document.querySelectorAll('.gap-popup.open').forEach(p=>p.classList.remove('open')); });
+}
+
+// ── DELIVER ──
+function confirmDeliver(){
+  const left=TOTAL-Object.values(answers).filter(v=>v&&v!=='').length;
+  if(left>0&&!confirm(`You have ${left} unanswered question(s). Are you sure you want to submit?`))return;
+  doSubmit(false);
+}
+async function doSubmit(auto){
+  saveNow();clearInterval(timerInt);clearInterval(autoInt);
+  const el=Math.floor((Date.now()-startTime)/1000);
+  const hh=Math.floor(el/3600),mm=Math.floor((el%3600)/60),ss=el%60;
+  const timeStr=hh>0?`${hh}h ${mm}m ${ss}s`:`${mm}m ${ss}s`;
+  const dateStr=new Date().toLocaleString('en-GB');
+  const done=Object.values(answers).filter(v=>v&&v!=='').length;
+  document.getElementById('rs-name').textContent=`Student: ${studentName}`;
+  document.getElementById('rs-ans').textContent=done;
+  document.getElementById('rs-time').textContent=timeStr;
+  document.getElementById('result-screen').classList.add('visible');
+  submitPayload=buildPayload(studentName,dateStr,timeStr,done);
+  try{
+    await sendAll(submitPayload);
+    document.getElementById('rs-sending').style.display='none';
+    document.getElementById('rs-done').style.display='block';
+    try{localStorage.removeItem(sKey());Object.keys(localStorage).filter(k=>k.startsWith(sKey()+'_bk_')).forEach(k=>localStorage.removeItem(k));localStorage.setItem(sKey()+'_submitted','1');}catch(e){}
+  }catch(e){
+    document.getElementById('rs-sending').style.display='none';
+    document.getElementById('rs-error').style.display='block';
+  }
+}
+async function retrySubmit(){
+  document.getElementById('rs-error').style.display='none';
+  document.getElementById('rs-sending').style.display='block';
+  try{
+    await sendAll(submitPayload);
+    document.getElementById('rs-sending').style.display='none';
+    document.getElementById('rs-done').style.display='block';
+    try{localStorage.removeItem(sKey());Object.keys(localStorage).filter(k=>k.startsWith(sKey()+'_bk_')).forEach(k=>localStorage.removeItem(k));localStorage.setItem(sKey()+'_submitted','1');}catch(e){}
+  }catch(e){
+    document.getElementById('rs-sending').style.display='none';
+    document.getElementById('rs-error').style.display='block';
+  }
+}
+
+// ── SEND VIA EMAILJS ──
+async function sendAll(payload){
+  emailjs.init(EJS_PUBLIC_KEY);
+
+  const partCfg = [
+    {l:'PART 1 – Multiple-choice cloze', r:[1,8]},
+    {l:'PART 2 – Open cloze',            r:[9,16]},
+    {l:'PART 3 – Word formation',        r:[17,24]},
+    {l:'PART 4 – Key word transformation',r:[25,30]},
+    {l:'PART 5 – Multiple choice',       r:[31,36]},
+    {l:'PART 6 – Multiple matching (parks)',r:[37,40]},
+    {l:'PART 7 – Gapped text',           r:[41,46]},
+    {l:'PART 8 – Multiple matching (Gehry)',r:[47,56]}
+  ];
+  const pct = Math.round(parseInt(payload.respondidas)/TOTAL*100);
+
+  let tableRows = '';
+  partCfg.forEach(pc => {
+    tableRows += `<tr><td colspan="3" style="background:#1e2235;padding:10px 18px;border-top:2px solid #e8c547;">
+      <span style="font-family:monospace;font-size:11px;letter-spacing:2px;color:#e8c547;text-transform:uppercase;">${pc.l}</span>
+    </td></tr>`;
+    for(let q = pc.r[0]; q <= pc.r[1]; q++){
+      const ans = answers[q];
+      const qd  = QS.find(x => x.q === q);
+      let qDesc = '';
+      if(qd){
+        if(qd.type === 'mcq') qDesc = qd.stem.replace(/<[^>]+>/g,'') + (qd.opts ? ' — ' + qd.opts.map((o,i)=>String.fromCharCode(65+i)+') '+o).join(' · ') : '');
+        else if(qd.type === 'text') qDesc = qd.stem.replace(/<[^>]+>/g,'');
+        else if(qd.type === 'word') qDesc = `[${qd.word}] ${qd.stem.replace(/<[^>]+>/g,'')}`;
+        else if(qd.type === 'keyw') qDesc = `[${qd.key}]  "${qd.s1}"  →  "${qd.s2}"`;
+        else if(qd.type === 'gap') qDesc = qd.ctx.replace(/<[^>]+>/g,'');
+        else if(qd.type === 'sec') qDesc = qd.stem;
+      }
+      const ansCell = ans
+        ? `<span style="background:#e8c547;color:#0f0e17;font-weight:700;border-radius:4px;padding:3px 12px;font-family:monospace;font-size:15px;">${ans}</span>`
+        : `<span style="color:#555;font-style:italic;">No answer</span>`;
+      tableRows += `<tr style="background:${ans?'#0e2218':'#13192e'};">
+        <td style="padding:10px 14px;font-size:12px;color:#e8c547;font-family:monospace;font-weight:700;border-bottom:1px solid #1e2235;width:36px;vertical-align:top;">Q${q}</td>
+        <td style="padding:10px 14px;font-size:13px;color:#b0b8d0;border-bottom:1px solid #1e2235;line-height:1.5;">${qDesc}</td>
+        <td style="padding:10px 16px;font-size:14px;border-bottom:1px solid #1e2235;text-align:center;vertical-align:middle;white-space:nowrap;">${ansCell}</td>
+      </tr>`;
+    }
+  });
+
+  const emailHTML = `<div style="font-family:'Segoe UI',Arial,sans-serif;background:#0f0e17;padding:20px;max-width:720px;margin:0 auto;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border-radius:14px;overflow:hidden;">
+    <tr><td colspan="3" style="background:linear-gradient(135deg,#1a1a2e,#16213e);padding:22px 24px 16px;border-bottom:3px solid #e8c547;">
+      <div style="font-size:10px;letter-spacing:3px;color:#e8c547;text-transform:uppercase;margin-bottom:4px;">Cambridge English</div>
+      <div style="font-size:26px;font-weight:900;color:#ffffff;margin-bottom:2px;">C1 Advanced</div>
+      <div style="font-size:12px;color:#a7a9be;">Reading &amp; Use of English</div>
+    </td></tr>
+    <tr><td colspan="3" style="background:#16213e;padding:14px 24px;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="font-size:13px;color:#a7a9be;">👤 <strong style="color:#ffffff;">${payload.alumno}</strong></td>
+          <td style="font-size:13px;color:#a7a9be;text-align:center;">📅 ${payload.fecha}</td>
+          <td style="font-size:13px;color:#a7a9be;text-align:right;">⏱ ${payload.tiempo_usado}</td>
+        </tr>
+        <tr><td colspan="3" style="padding-top:10px;">
+          <div style="background:#0a0a14;border-radius:5px;height:6px;overflow:hidden;">
+            <div style="background:linear-gradient(90deg,#e8c547,#4ecdc4);height:100%;width:${pct}%;"></div>
+          </div>
+          <div style="font-size:11px;color:#a7a9be;margin-top:4px;">${payload.respondidas} questions answered (${pct}%)</div>
+        </td></tr>
+      </table>
+    </td></tr>
+    ${tableRows}
+    <tr><td colspan="3" style="background:#1a1a2e;padding:12px 24px;text-align:center;border-top:1px solid #2a2a3e;">
+      <span style="font-size:11px;color:#444;">C1 Advanced Digital Exam · Auto-generated</span>
+    </td></tr>
+  </table>
+</div>`;
+
+  const result = await emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, {
+    to_email:    TEACHER_EMAIL,
+    subject:     payload._subject,
+    alumno:      payload.alumno,
+    fecha:       payload.fecha,
+    tiempo:      payload.tiempo_usado,
+    respondidas: payload.respondidas,
+    informe:     emailHTML,
+  });
+  if(result.status !== 200) throw new Error('EmailJS error: ' + result.text);
+
+  try {
+    const blob = new Blob([payload.informe_html], {type:'text/html;charset=utf-8'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `C1_Advanced_${payload.alumno.replace(/\s+/g,'_')}_${new Date().toLocaleDateString('en-GB').replace(/\//g,'-')}.html`;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  } catch(e) {}
+}
+
+// ── BUILD STANDALONE HTML REPORT ──
+function buildPayload(name, date, timeUsed, answered){
+  const pct = Math.round(answered/TOTAL*100);
+  const partCfg = [
+    {l:'PART 1 – Multiple-choice cloze', r:[1,8]},
+    {l:'PART 2 – Open cloze',            r:[9,16]},
+    {l:'PART 3 – Word formation',        r:[17,24]},
+    {l:'PART 4 – Key word transformation',r:[25,30]},
+    {l:'PART 5 – Multiple choice',       r:[31,36]},
+    {l:'PART 6 – Multiple matching (parks)',r:[37,40]},
+    {l:'PART 7 – Gapped text',           r:[41,46]},
+    {l:'PART 8 – Multiple matching (Gehry)',r:[47,56]}
+  ];
+
+  let rows = '';
+  partCfg.forEach(pc => {
+    rows += `<tr><td colspan="3" style="background:#1a1a2e;padding:12px 22px;border-top:2px solid #e8c547;">
+      <span style="font-family:monospace;font-size:11px;letter-spacing:3px;color:#e8c547;text-transform:uppercase;">${pc.l}</span>
+    </td></tr>`;
+    for(let q = pc.r[0]; q <= pc.r[1]; q++){
+      const ans = answers[q];
+      const qd  = QS.find(x => x.q === q);
+      let qDesc = '';
+      if(qd){
+        if(qd.type === 'mcq'){
+          qDesc = qd.stem.replace(/<[^>]+>/g,'');
+          if(qd.opts) qDesc += '<br><span style="color:#6a6a8a;font-size:12px;">' + qd.opts.map((o,i)=>String.fromCharCode(65+i)+') '+o).join(' &nbsp;·&nbsp; ') + '</span>';
+        } else if(qd.type === 'text'){
+          qDesc = qd.stem.replace(/<[^>]+>/g,'');
+        } else if(qd.type === 'word'){
+          qDesc = `<span style="color:#ff6b6b;font-family:monospace;font-size:12px;font-weight:700;">${qd.word}</span><br><span style="color:#b0b8d0;">${qd.stem.replace(/<[^>]+>/g,'')}</span>`;
+        } else if(qd.type === 'keyw'){
+          qDesc = `<span style="color:#ff6b6b;font-family:monospace;font-size:12px;font-weight:700;letter-spacing:1px;">${qd.key}</span><br>
+            <span style="color:#7a7a9a;font-size:12px;">${qd.s1}</span><br>
+            <span style="color:#b0b8d0;font-size:12px;">→ ${qd.s2}</span>`;
+        } else if(qd.type === 'gap'){
+          qDesc = `<span style="color:#b0b8d0;font-size:13px;">"…${qd.ctx.replace(/<[^>]+>/g,'')}…"</span>`;
+        } else if(qd.type === 'sec'){
+          qDesc = qd.stem;
+        }
+      }
+      const ad = ans
+        ? `<span style="background:#e8c547;color:#0f0e17;font-weight:700;border-radius:5px;padding:4px 14px;font-family:monospace;font-size:16px;">${ans}</span>`
+        : `<span style="color:#444;font-style:italic;">No answer</span>`;
+      rows += `<tr style="background:${ans?'#0e2218':'#13192e'};">
+        <td style="padding:11px 16px;font-size:13px;color:#e8c547;font-family:monospace;font-weight:700;border-bottom:1px solid #1e2235;width:38px;vertical-align:top;">Q${q}</td>
+        <td style="padding:11px 16px;font-size:13px;color:#b0b8d0;border-bottom:1px solid #1e2235;line-height:1.6;vertical-align:top;">${qDesc}</td>
+        <td style="padding:11px 18px;border-bottom:1px solid #1e2235;text-align:center;vertical-align:middle;white-space:nowrap;">${ad}</td>
+      </tr>`;
+    }
+  });
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C1 Advanced · ${name} · ${date}</title>
+<style>
+  body{margin:0;padding:28px 16px;background:#0f0e17;font-family:'Segoe UI',Arial,sans-serif;color:#fffffe;}
+  .wrap{max-width:860px;margin:0 auto;}
+  table{width:100%;border-collapse:collapse;}
+  @media print{body{background:#fff;color:#000;padding:0;} .no-print{display:none;} td{color:#000!important;background:#fff!important;border-color:#ccc!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="no-print" style="text-align:right;margin-bottom:16px;">
+    <button onclick="window.print()" style="background:#e8c547;color:#0f0e17;border:none;border-radius:9px;padding:9px 20px;font-size:14px;font-weight:700;cursor:pointer;">🖨 Print / Save PDF</button>
+  </div>
+  <table style="border-radius:14px;overflow:hidden;">
+    <tr><td colspan="3" style="background:linear-gradient(135deg,#1a1a2e,#16213e);padding:26px 26px 18px;border-bottom:3px solid #e8c547;">
+      <div style="font-size:11px;letter-spacing:3px;color:#e8c547;text-transform:uppercase;margin-bottom:5px;">Cambridge English</div>
+      <div style="font-size:30px;font-weight:900;color:#fffffe;margin-bottom:3px;">C1 Advanced</div>
+      <div style="font-size:13px;color:#a7a9be;">Reading &amp; Use of English</div>
+    </td></tr>
+    <tr><td colspan="3" style="background:#16213e;padding:14px 26px;">
+      <table style="width:100%;border-collapse:collapse;">
+        <tr>
+          <td style="font-size:14px;color:#a7a9be;padding:3px 0;">👤 <strong style="color:#fffffe;">${name}</strong></td>
+          <td style="font-size:14px;color:#a7a9be;text-align:center;padding:3px 0;">📅 ${date}</td>
+          <td style="font-size:14px;color:#a7a9be;text-align:right;padding:3px 0;">⏱ ${timeUsed}</td>
+        </tr>
+        <tr><td colspan="3" style="padding-top:10px;">
+          <div style="background:#0f0e17;border-radius:6px;height:7px;overflow:hidden;">
+            <div style="background:linear-gradient(90deg,#e8c547,#4ecdc4);height:100%;width:${pct}%;"></div>
+          </div>
+          <div style="font-size:12px;color:#a7a9be;margin-top:5px;">${answered} / ${TOTAL} questions answered (${pct}%)</div>
+        </td></tr>
+      </table>
+    </td></tr>
+    ${rows}
+    <tr><td colspan="3" style="background:#1a1a2e;padding:14px 26px;text-align:center;border-top:1px solid rgba(232,197,71,.15);">
+      <p style="font-size:11px;color:#555;margin:0;">C1 Advanced Digital Exam · Auto-generated</p>
+    </td></tr>
+  </table>
+</div>
+</body></html>`;
+
+  return {
+    _subject:     `📝 C1 Advanced – ${name} – ${date}`,
+    alumno:       name,
+    fecha:        date,
+    tiempo_usado: timeUsed,
+    respondidas:  `${answered}/${TOTAL}`,
+    informe_html: html,
+    ...Object.fromEntries(Object.entries(answers).map(([k,v]) => [`Q${k}`, v||'(no answer)']))
+  };
+}
+</script>
+<!--
+══════════════════════════════════════════════════════════
+ EMAILJS SETUP INSTRUCTIONS (5 minutes)
+══════════════════════════════════════════════════════════
+
+STEP 1 — Free account (200 emails/month, no card)
+  → https://emailjs.com → Sign Up
+
+STEP 2 — Connect your email
+  → Email Services → Add New Service → Gmail or whichever you use
+  → Copy the Service ID (e.g. service_abc123)
+
+STEP 3 — Create template
+  → Email Templates → Create New Template → start blank
+  → "To" field:      {{to_email}}
+  → "Subject" field: {{subject}}
+  → Email body (HTML enabled):
+
+      {{{informe}}}
+
+  ⚠️ IMPORTANT: use THREE braces {{{informe}}} so EmailJS
+     renders the HTML instead of showing it as plain text.
+
+  → Save and copy Template ID (e.g. template_xyz789)
+
+STEP 4 — Public Key
+  → Account → General → Public Key (e.g. AbCdEfGhIjKlMnOp)
+
+STEP 5 — Fill in the file
+  Find these lines at the top of the <script>:
+
+    const EJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
+    const EJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
+    const EJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+    const TEACHER_EMAIL   = 'teacher@email.com';
+
+  And replace with your actual values.
+
+══════════════════════════════════════════════════════════
+-->
+</body></html>
